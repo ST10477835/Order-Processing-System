@@ -1,3 +1,5 @@
+using Order_Processing_System.Services;
+
 namespace Order_Processing_System
 {
     public class Program
@@ -8,7 +10,10 @@ namespace Order_Processing_System
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            // Allows OrderProcessingWorker to use queuestorage client directly
+            builder.Services.AddSingleton<QueueStorageService>();
+            builder.Services.AddSingleton<TableStorageService>();
+            builder.Services.AddSingleton<BlobStorageService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
