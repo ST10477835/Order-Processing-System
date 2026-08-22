@@ -8,12 +8,15 @@ namespace Order_Processing_System.Workers
     {
         private readonly QueueStorageService _queueStorageService;
         private readonly BlobStorageService _blobStorageService;
+        private readonly TableStorageService _tableStorageService;
         public OrderProcessingWorker(
             QueueStorageService queueStorageService,
-            BlobStorageService blobStorageService)
+            BlobStorageService blobStorageService,
+            TableStorageService tableStorageService)
         {
             _queueStorageService = queueStorageService;
             _blobStorageService = blobStorageService;
+            _tableStorageService = tableStorageService;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -26,8 +29,24 @@ namespace Order_Processing_System.Workers
                     Order? order = JsonSerializer.Deserialize<Order>(queueMessage.MessageText);
                     if(order != null)
                     {
-                        await _blobStorageService.CreateBlobAsync(order);
-                        Console.WriteLine("Blob was created.");
+                        var orderEntity = new OrderEntity
+                        {
+                            PartitionKey = "Orders",
+                            RowKey = order.OrderId.ToString(),
+                            UserId = order.UserId,
+                            ProductId = order.ProductId,
+                            Status = order.Status
+                        };
+                        try
+                        {
+                            await _tableStorageService.AddOrderAsync(orderEntity);
+                            Console.WriteLine("Table entry was created.");
+                            await _blobStorageService.CreateBlobAsync(order);
+                            Console.WriteLine("Blob entry was created.");
+                        }catch(Exception ex)
+                        {
+                            Console.WriteLine($"Failed to process order: {ex.Message}");
+                        }
                     }
                     Console.WriteLine("Worker received: {0}", queueMessage.MessageText);
                     await _queueStorageService.DeleteMessageAsync(queueMessage.MessageId, queueMessage.PopReceipt);
