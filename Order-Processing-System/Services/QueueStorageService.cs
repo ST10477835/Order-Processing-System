@@ -12,6 +12,12 @@ namespace Order_Processing_System.Services
                 "UseDevelopmentStorage=true"
                 );
             _queueClient = _queueServiceClient.GetQueueClient("order-processing");
+            _queueClient.CreateIfNotExists();
+        }
+        public async Task SendMessageAsync(string message)
+        {
+            await _queueClient.SendMessageAsync(message);
+            Console.WriteLine("message successfully sent.");
         }
     }
 }

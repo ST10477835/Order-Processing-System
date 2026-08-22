@@ -32,7 +32,7 @@ namespace Order_Processing_System
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Orders}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
