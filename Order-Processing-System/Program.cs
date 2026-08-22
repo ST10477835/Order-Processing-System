@@ -1,4 +1,5 @@
 using Order_Processing_System.Services;
+using Order_Processing_System.Workers;
 
 namespace Order_Processing_System
 {
@@ -10,6 +11,8 @@ namespace Order_Processing_System
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddHostedService<OrderProcessingWorker>();
             // Allows OrderProcessingWorker to use queuestorage client directly
             builder.Services.AddSingleton<QueueStorageService>();
             builder.Services.AddSingleton<TableStorageService>();
@@ -32,7 +35,7 @@ namespace Order_Processing_System
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Orders}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
