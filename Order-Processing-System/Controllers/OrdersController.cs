@@ -33,5 +33,6 @@ namespace Order_Processing_System.Controllers
             await _queueStorageService.SendMessageAsync(json);
             return Ok("Order successfully created");
         }
+
     }
 }

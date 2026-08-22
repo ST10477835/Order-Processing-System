@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Queues;
+using Order_Processing_System.Models;
 
 namespace Order_Processing_System.Services
 {
@@ -18,6 +19,24 @@ namespace Order_Processing_System.Services
         {
             await _queueClient.SendMessageAsync(message);
             Console.WriteLine("message successfully sent.");
+        }
+        public async Task<QueueMessageResult?> ReceiveMessageAsync()
+        {
+            var response = await _queueClient.ReceiveMessageAsync();
+            if (response.Value == null)
+            {
+                return null;
+            }
+            return new QueueMessageResult
+            {
+                MessageText = response.Value.MessageText,
+                MessageId = response.Value.MessageId,
+                PopReceipt = response.Value.PopReceipt
+            };
+        }
+        public async Task DeleteMessageAsync(string messageId, string popReceipt)
+        {
+            await _queueClient.DeleteMessageAsync(messageId, popReceipt);
         }
     }
 }
