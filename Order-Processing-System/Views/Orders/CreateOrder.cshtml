@@ -1,0 +1,11 @@
+﻿@model Order
+<h1>Quick Order</h1>
+<form asp-action="CreateOrder" method="post">
+    <label for="UserId">Customer ID: </label>
+    <input type="number" name="UserId" asp-for="UserId"/><br/>
+    <label for="ProductId">Product ID: </label>
+    <input type="number" name="ProductId" asp-for="ProductId"/><br/>
+    <label for="Status">Status: </label>
+    <input type="text" name="Status" asp-for="Status"/><br/>
+    <button type="submit">Create Order</button>
+</form>

@@ -20,5 +20,22 @@ namespace Order_Processing_System.Services
         {
             await _tableClient.AddEntityAsync(order);
         }
+        public List<Order>  GetOrders()
+        {
+            var _orders = _tableClient.Query<OrderEntity>();
+            List<Order> orders = new List<Order>();
+            foreach(OrderEntity order in _orders)
+            {
+                orders.Add(new Order
+                {
+                    OrderId = int.Parse(order.RowKey),
+                    ProductId = order.ProductId,
+                    UserId = order.UserId,
+                    CreatedAt = order.CreatedAt,
+                    Status = order.Status
+                });
+            }
+            return orders;
+        }
     }
 }

@@ -10,13 +10,20 @@ namespace Order_Processing_System.Controllers
     public class OrdersController : Controller
     {
         private readonly QueueStorageService _queueStorageService = new QueueStorageService();
+        private readonly TableStorageService _tableStorageService = new TableStorageService();
 
+        [HttpGet]
         public IActionResult Index()
         {
             Console.WriteLine("Program started.");
             return View();
         }
-        [HttpPost]
+        [HttpGet("CreateOrder")]
+        public IActionResult CreateOrder()
+        {
+            return View();
+        }
+        [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromForm] Order _order)
         {
             Order order = new Order
@@ -31,7 +38,7 @@ namespace Order_Processing_System.Controllers
             string json = JsonSerializer.Serialize(order);
 
             await _queueStorageService.SendMessageAsync(json);
-            return Ok("Order successfully created");
+            return View("Index");
         }
 
     }

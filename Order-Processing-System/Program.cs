@@ -33,10 +33,9 @@ namespace Order_Processing_System
             app.UseAuthorization();
 
             app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Orders}/{action=Index}/{id?}")
-                .WithStaticAssets();
+            app.MapGet("/", () => Results.Redirect("/api/orders"));
+
+            app.MapControllers();
 
             app.Run();
         }
