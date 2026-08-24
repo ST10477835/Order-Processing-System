@@ -29,13 +29,19 @@ namespace Order_Processing_System.Services
                 orders.Add(new Order
                 {
                     OrderId = int.Parse(order.RowKey),
-                    ProductId = order.ProductId,
-                    UserId = order.UserId,
-                    CreatedAt = order.CreatedAt,
-                    Status = order.Status
+                    CustomerName = order.CustomerName,
+                    Email = order.Email,
+                    Product = order.Product,
+                    Quanitity = order.Quanitity,
+                    Price = order.Price,
+                    CreatedAt = order.CreatedAt
                 });
             }
             return orders;
+        }
+        public int Count()
+        {
+            return _tableClient.Query<OrderEntity>().Count();
         }
     }
 }

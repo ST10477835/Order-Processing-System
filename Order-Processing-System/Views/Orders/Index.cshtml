@@ -1,4 +1,18 @@
-﻿@model Order
+﻿@model List<Order>
 <form asp-action="CreateOrder" method="get">
     <button type="submit">Create Order</button>
 </form>
+<h1>Orders</h1>
+<ul>
+    @foreach(Order order in Model)
+    {
+        <li>
+            OrderID: @order.OrderId<br/>
+            Customer Name: @order.CustomerName<br/>
+            Product: @order.Product<br/>
+            Quantity: @order.Quanitity<br />
+            Price: @order.Price<br/>
+            Created At: @order.CreatedAt<br />
+        </li>
+    }
+</ul>

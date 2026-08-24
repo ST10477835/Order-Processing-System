@@ -33,9 +33,12 @@ namespace Order_Processing_System.Workers
                         {
                             PartitionKey = "Orders",
                             RowKey = order.OrderId.ToString(),
-                            UserId = order.UserId,
-                            ProductId = order.ProductId,
-                            Status = order.Status
+                            CustomerName = order.CustomerName,
+                            Email = order.Email,
+                            Product = order.Product,
+                            Quanitity = order.Quanitity,
+                            Price = order.Price,
+                            CreatedAt = order.CreatedAt
                         };
                         try
                         {
