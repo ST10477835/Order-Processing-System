@@ -21,7 +21,12 @@ namespace Order_Processing_System.Services
             var json = JsonSerializer.Serialize(orderMessage);
             await _queueClient.SendMessageAsync(json);
             Console.WriteLine("message successfully sent.");
-            Console.WriteLine(json);
+        }
+        public async Task SendMessageAsync(ProductMessage productMessage)
+        {
+            var json = JsonSerializer.Serialize(productMessage);
+            await _queueClient.SendMessageAsync(json);
+            Console.WriteLine("message successfully sent.");
         }
         public async Task<QueueMessageResult?> ReceiveMessageAsync()
         {

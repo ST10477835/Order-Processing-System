@@ -12,7 +12,7 @@
         <li>
             OrderID: @order.OrderId<br/>
             Customer Name: @order.CustomerName<br/>
-            Product: @products.FirstOrDefault(o=>o.ProductId==order.ProductId).Name<br/>
+            Product: @products.First(p=>p.ProductId==order.ProductId).Name<br/>
             Quantity: @order.Quanitity<br />
             Created At: @order.CreatedAt<br />
         </li>

@@ -42,7 +42,7 @@ namespace Order_Processing_System.Controllers
 
             await _queueStorageService.SendMessageAsync(
                 new OrderMessage{
-                    Operation="Create",
+                    Operation="Create Order",
                     Order = order
                 });
             return RedirectToAction("Index");

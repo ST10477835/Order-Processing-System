@@ -68,5 +68,10 @@ namespace Order_Processing_System.Services
             var tableClient = GetOrderTable();
             return tableClient.Query<OrderEntity>().Count();
         }
+        public int CountProducts()
+        {
+            var tableClient = GetProductTable();
+            return tableClient.Query<ProductEntity>().Count();
+        }
     }
 }
