@@ -17,11 +17,13 @@ namespace Order_Processing_System.Controllers
         public IActionResult Index()
         {
             Console.WriteLine("Program started.");
+            ViewBag.Products = _tableStorageService.GetProducts();
             return View(_tableStorageService.GetOrders());
         }
         [HttpGet("CreateOrder")]
         public IActionResult CreateOrder()
         {
+            ViewBag.Products = _tableStorageService.GetProducts();
             return View();
         }
         [HttpPost("CreateOrder")]
@@ -29,18 +31,20 @@ namespace Order_Processing_System.Controllers
         {
             Order order = new Order
             {//placeholder values
-                OrderId = _tableStorageService.Count() + 1,
+                OrderId = _tableStorageService.CountOrders() + 1,
                 CustomerName = _order.CustomerName,
                 Email = _order.Email,
-                Product = _order.Product,
+                ProductId = _order.ProductId,
                 Quanitity = _order.Quanitity,
-                Price = _order.Price,
                 CreatedAt = DateTime.Now
             };
 
-            string json = JsonSerializer.Serialize(order);
 
-            await _queueStorageService.SendMessageAsync(json);
+            await _queueStorageService.SendMessageAsync(
+                new OrderMessage{
+                    Operation="Create",
+                    Order = order
+                });
             return RedirectToAction("Index");
         }
 

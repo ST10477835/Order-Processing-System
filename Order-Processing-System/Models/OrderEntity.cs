@@ -9,9 +9,8 @@ namespace Order_Processing_System.Models
         public string RowKey { get; set; }
         public string CustomerName { get; set; } = "";
         public string Email { get; set; } = "";
-        public string Product { get; set; } = "";
+        public int ProductId { get; set; } = 0;
         public int Quanitity { get; set; } = 0;
-        public double Price { get; set; } = 0.0;
         public DateTime CreatedAt { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }

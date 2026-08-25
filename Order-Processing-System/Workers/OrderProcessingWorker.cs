@@ -22,34 +22,42 @@ namespace Order_Processing_System.Workers
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                Console.WriteLine(stoppingToken);
                 var queueMessage = await _queueStorageService.ReceiveMessageAsync();
 
                 if (queueMessage != null)
                 {
-                    Order? order = JsonSerializer.Deserialize<Order>(queueMessage.MessageText);
-                    if(order != null)
+                    OrderMessage? orderMessage = JsonSerializer.Deserialize<OrderMessage>(queueMessage.MessageText);
+                    if(orderMessage != null)
                     {
-                        var orderEntity = new OrderEntity
+                        Order order = orderMessage.Order;
+                        switch (orderMessage.Operation)
                         {
-                            PartitionKey = "Orders",
-                            RowKey = order.OrderId.ToString(),
-                            CustomerName = order.CustomerName,
-                            Email = order.Email,
-                            Product = order.Product,
-                            Quanitity = order.Quanitity,
-                            Price = order.Price,
-                            CreatedAt = order.CreatedAt
-                        };
-                        try
-                        {
-                            await _tableStorageService.AddOrderAsync(orderEntity);
-                            Console.WriteLine("Table entry was created.");
-                            await _blobStorageService.CreateBlobAsync(order);
-                            Console.WriteLine("Blob entry was created.");
-                        }catch(Exception ex)
-                        {
-                            Console.WriteLine($"Failed to process order: {ex.Message}");
+                            case "Create":
+                                    var orderEntity = new OrderEntity
+                                    {
+                                        PartitionKey = "Orders",
+                                        RowKey = order.OrderId.ToString(),
+                                        CustomerName = order.CustomerName,
+                                        Email = order.Email,
+                                        ProductId = order.ProductId,
+                                        Quanitity = order.Quanitity,
+                                        CreatedAt = order.CreatedAt
+                                    };
+                                    try
+                                    {
+                                        await _tableStorageService.AddOrderAsync(orderEntity);
+                                        Console.WriteLine("Table entry was created.");
+                                        await _blobStorageService.CreateBlobAsync(order);
+                                        Console.WriteLine("Blob entry was created.");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine($"Failed to process order: {ex.Message}");
+                                    }
+                                break;
                         }
+                        
                     }
                     Console.WriteLine("Worker received: {0}", queueMessage.MessageText);
                     await _queueStorageService.DeleteMessageAsync(queueMessage.MessageId, queueMessage.PopReceipt);

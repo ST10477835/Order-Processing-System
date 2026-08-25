@@ -6,23 +6,32 @@ namespace Order_Processing_System.Services
     public class TableStorageService
     {
         private readonly TableServiceClient _tableServiceClient;
-        private readonly TableClient _tableClient;
-
         public TableStorageService()
         {
             _tableServiceClient = new TableServiceClient(
                 "UseDevelopmentStorage=true");
-
-            _tableClient = _tableServiceClient.GetTableClient("Orders");
-            _tableClient.CreateIfNotExists();
+        }
+        public TableClient GetOrderTable()
+        {
+            TableClient tableClient = _tableServiceClient.GetTableClient("Orders");
+            tableClient.CreateIfNotExists();
+            return tableClient;
+        }
+        public TableClient GetProductTable()
+        {
+            TableClient tableClient = _tableServiceClient.GetTableClient("Products");
+            tableClient.CreateIfNotExists();
+            return tableClient;
         }
         public async Task AddOrderAsync(OrderEntity order)
         {
-            await _tableClient.AddEntityAsync(order);
+            var tableClient = GetOrderTable();
+            await tableClient.AddEntityAsync(order);
         }
-        public List<Order>  GetOrders()
+        public List<Order> GetOrders()
         {
-            var _orders = _tableClient.Query<OrderEntity>();
+            var tableClient = GetOrderTable();
+            var _orders = tableClient.Query<OrderEntity>();
             List<Order> orders = new List<Order>();
             foreach(OrderEntity order in _orders)
             {
@@ -31,17 +40,33 @@ namespace Order_Processing_System.Services
                     OrderId = int.Parse(order.RowKey),
                     CustomerName = order.CustomerName,
                     Email = order.Email,
-                    Product = order.Product,
+                    ProductId = order.ProductId,
                     Quanitity = order.Quanitity,
-                    Price = order.Price,
                     CreatedAt = order.CreatedAt
                 });
             }
             return orders;
         }
-        public int Count()
+        public List<Product> GetProducts()
         {
-            return _tableClient.Query<OrderEntity>().Count();
+            var tableClient = GetProductTable();
+            var _products = tableClient.Query<ProductEntity>();
+            List<Product> products = new List<Product>();
+            foreach(ProductEntity product in _products)
+            {
+                products.Add(new Product
+                {
+                    ProductId = int.Parse(product.RowKey),
+                    Name = product.Name,
+                    Price = product.Price
+                });
+            }
+            return products;
+        }
+        public int CountOrders()
+        {
+            var tableClient = GetOrderTable();
+            return tableClient.Query<OrderEntity>().Count();
         }
     }
 }

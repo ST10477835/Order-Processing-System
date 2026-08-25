@@ -1,4 +1,7 @@
 ﻿@model List<Order>
+@{
+    var products = ViewBag.Products as List<Product>;
+}
 <form asp-action="CreateOrder" method="get">
     <button type="submit">Create Order</button>
 </form>
@@ -9,9 +12,8 @@
         <li>
             OrderID: @order.OrderId<br/>
             Customer Name: @order.CustomerName<br/>
-            Product: @order.Product<br/>
+            Product: @products.FirstOrDefault(o=>o.ProductId==order.ProductId).Name<br/>
             Quantity: @order.Quanitity<br />
-            Price: @order.Price<br/>
             Created At: @order.CreatedAt<br />
         </li>
     }

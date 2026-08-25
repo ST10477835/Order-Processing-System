@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Queues;
 using Order_Processing_System.Models;
+using System.Text.Json;
 
 namespace Order_Processing_System.Services
 {
@@ -15,10 +16,12 @@ namespace Order_Processing_System.Services
             _queueClient = _queueServiceClient.GetQueueClient("order-processing");
             _queueClient.CreateIfNotExists();
         }
-        public async Task SendMessageAsync(string message)
+        public async Task SendMessageAsync(OrderMessage orderMessage)
         {
-            await _queueClient.SendMessageAsync(message);
+            var json = JsonSerializer.Serialize(orderMessage);
+            await _queueClient.SendMessageAsync(json);
             Console.WriteLine("message successfully sent.");
+            Console.WriteLine(json);
         }
         public async Task<QueueMessageResult?> ReceiveMessageAsync()
         {
