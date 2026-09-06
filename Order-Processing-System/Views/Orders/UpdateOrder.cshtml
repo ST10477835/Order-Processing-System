@@ -1,0 +1,30 @@
+﻿@model Order
+@{
+    var products = ViewBag.Products as List<Product> ?? new List<Product>();
+}
+<h1>Update Order @Model.OrderId</h1>
+<form asp-action="UpdateOrder" method="post">
+    <input type="hidden" name="OrderId" asp-for="OrderId" value="@Model.OrderId"/>
+    <label for="CustomerName">CustomerName: </label>
+    <input type="text" name="CustomerName" asp-for="CustomerName" value="@Model.CustomerName" /><br />
+    <label for="Email">Email: </label>
+    <input type="email" name="Email" asp-for="Email" value="@Model.Email"/><br />
+
+    
+    <label for="Product">Product: </label>
+    <select asp-for="ProductId">
+        @if (products == null || products.Count == 0)
+        {
+            <option disabled>No products available</option>
+        }
+        else
+            @foreach (var product in products)
+            {   
+                <option value="@product.ProductId" selected="@(product.ProductId == Model.OrderId)">@product.Name</option>
+            }
+    </select>
+
+    <label for="Quanitity">Quanitity: </label>
+    <input type="number" name="Quanitity" asp-for="Quanitity" value="@Model.Quanitity"/><br />
+    <button type="submit">Update Order</button>
+</form>

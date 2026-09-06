@@ -1,4 +1,34 @@
-﻿@model Order
-<form asp-action="CreateOrder" method="post" enctype="application/x-www-form-urlencoded">
+﻿@model List<Order>
+@{
+    var products = ViewBag.Products as List<Product>;
+
+}
+<form asp-action="CreateOrder" method="get">
     <button type="submit">Create Order</button>
 </form>
+<h1>Orders</h1>
+<ul>
+    @foreach(Order order in Model)
+    {
+        <li>
+            OrderID: @order.OrderId<br/>
+            Customer Name: @order.CustomerName<br/>
+            Product: @products.First(p=>p.ProductId==order.ProductId).Name<br/>
+            Quantity: @order.Quanitity<br />
+            Created At: @order.CreatedAt<br />
+            <form asp-action="DeleteOrder" method="get" enctype="text/plain">
+                <input type="hidden" name="OrderId"  value="@order.OrderId" />
+                <button type="submit">
+                    Delete Order @order.OrderId
+                </button>
+            </form>
+            <form asp-action="UpdateOrder" method="get">
+                <input  type="hidden" name="OrderId" value="@order.OrderId"/>
+                <button type="submit">
+                    Update Order @order.OrderId
+                </button>
+            </form>
+
+        </li>
+    }
+</ul>

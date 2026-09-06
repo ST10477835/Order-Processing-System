@@ -26,27 +26,67 @@ namespace Order_Processing_System.Workers
 
                 if (queueMessage != null)
                 {
-                    Order? order = JsonSerializer.Deserialize<Order>(queueMessage.MessageText);
-                    if(order != null)
+                    OrderMessage? orderMessage = JsonSerializer.Deserialize<OrderMessage>(queueMessage.MessageText);
+                    if(orderMessage != null)
                     {
-                        var orderEntity = new OrderEntity
+                        switch (orderMessage.Operation)
                         {
-                            PartitionKey = "Orders",
-                            RowKey = order.OrderId.ToString(),
-                            UserId = order.UserId,
-                            ProductId = order.ProductId,
-                            Status = order.Status
-                        };
-                        try
-                        {
-                            await _tableStorageService.AddOrderAsync(orderEntity);
-                            Console.WriteLine("Table entry was created.");
-                            await _blobStorageService.CreateBlobAsync(order);
-                            Console.WriteLine("Blob entry was created.");
-                        }catch(Exception ex)
-                        {
-                            Console.WriteLine($"Failed to process order: {ex.Message}");
+                            case "Create Order":
+                                {
+                                    Order? order = orderMessage.Order;
+                                    var orderEntity = new OrderEntity
+                                    {
+                                        PartitionKey = "Orders",
+                                        RowKey = order.OrderId.ToString(),
+                                        CustomerName = order.CustomerName,
+                                        Email = order.Email,
+                                        ProductId = order.ProductId,
+                                        Quanitity = order.Quanitity,
+                                        CreatedAt = order.CreatedAt
+                                    };
+                                    try
+                                    {
+                                        await _tableStorageService.AddOrderAsync(orderEntity);
+                                        Console.WriteLine("Table entry was created.");
+                                        await _blobStorageService.CreateBlobAsync(order);
+                                        Console.WriteLine("Blob entry was created.");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine($"Failed to process order: {ex.Message}");
+                                    }
+                                }
+                                break;
+                            case "Delete Order":
+                                {
+                                    int orderId = orderMessage.OrderId;
+                                    Console.WriteLine(queueMessage.MessageText);
+                                    Console.WriteLine(orderMessage);
+                                    Console.WriteLine($"Order Id is {orderId}");
+                                    await _tableStorageService.DeleteOrderAsync(orderId);
+                                    await _blobStorageService.DeleteBlobAsync(orderId);
+                                    Console.WriteLine($"Successfully Deleted Record {orderId}");
+                                }
+                                break;
+                            case "Update Order":
+                                {
+                                    Order? order = orderMessage.Order;
+                                    var orderEntity = new OrderEntity
+                                    {
+                                        PartitionKey = "Orders",
+                                        RowKey = order.OrderId.ToString(),
+                                        CustomerName = order.CustomerName,
+                                        Email = order.Email,
+                                        ProductId = order.ProductId,
+                                        Quanitity = order.Quanitity,
+                                        CreatedAt = order.CreatedAt
+                                    };
+                                    await _tableStorageService.UpdateOrderAsync(orderEntity);
+                                    await _blobStorageService.UpdateBlobAsync(order);
+                                } 
+                                break;
                         }
+
                     }
                     Console.WriteLine("Worker received: {0}", queueMessage.MessageText);
                     await _queueStorageService.DeleteMessageAsync(queueMessage.MessageId, queueMessage.PopReceipt);

@@ -1,0 +1,11 @@
+﻿@model Order
+
+<h1>Delete Order</h1>
+<p>Are you sure you want to delete order @Model.OrderId</p>
+<form asp-action="DeleteOrder" method="post">
+    <input type="hidden" name="OrderId" value="@Model.OrderId"/>
+    <button type="submit">Yes</button>
+</form>
+<form asp-action="Index" method="get">
+    <button type="submit">No</button>
+</form>

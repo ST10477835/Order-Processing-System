@@ -1,0 +1,14 @@
+﻿@model List<Product>
+<form asp-action="CreateProduct" method="get">
+    <button type="submit">Create Product</button>
+</form>
+<h1>Product</h1>
+<ul>
+    @foreach (Product product in Model)
+    {
+        <li>
+            Product Name: @product.Name<br/>
+            Price: R @product.Price
+        </li>
+    }
+</ul>
