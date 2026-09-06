@@ -22,7 +22,6 @@ namespace Order_Processing_System.Workers
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                Console.WriteLine(stoppingToken);
                 var queueMessage = await _queueStorageService.ReceiveMessageAsync();
 
                 if (queueMessage != null)
@@ -30,11 +29,11 @@ namespace Order_Processing_System.Workers
                     OrderMessage? orderMessage = JsonSerializer.Deserialize<OrderMessage>(queueMessage.MessageText);
                     if(orderMessage != null)
                     {
-                        Order order = orderMessage.Order;
                         switch (orderMessage.Operation)
                         {
-                            case "Create":
-                                    var orderEntity = new OrderEntity
+                            case "Create Order":
+                                Order? order = orderMessage.Order;
+                                var orderEntity = new OrderEntity
                                     {
                                         PartitionKey = "Orders",
                                         RowKey = order.OrderId.ToString(),
@@ -56,8 +55,19 @@ namespace Order_Processing_System.Workers
                                         Console.WriteLine($"Failed to process order: {ex.Message}");
                                     }
                                 break;
+                            case "Delete Order":
+                                    int orderId = orderMessage.OrderId;
+                                Console.WriteLine(queueMessage.MessageText);
+                                Console.WriteLine(orderMessage);
+                                Console.WriteLine($"Order Id is {orderId}");
+                                    await _tableStorageService.DeleteOrderAsync(orderId);
+                                await _blobStorageService.DeleteBlobAsync(orderId);
+                                    Console.WriteLine($"Successfully Deleted Record {orderId}");
+                                break;
+                            case "Create Product":
+                                break;
                         }
-                        
+
                     }
                     Console.WriteLine("Worker received: {0}", queueMessage.MessageText);
                     await _queueStorageService.DeleteMessageAsync(queueMessage.MessageId, queueMessage.PopReceipt);

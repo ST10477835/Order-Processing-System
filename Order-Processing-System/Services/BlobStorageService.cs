@@ -9,11 +9,12 @@ namespace Order_Processing_System.Services
     {
         private readonly BlobServiceClient _blobServiceClient;
         private readonly BlobContainerClient _blobContainerClient;
+        private readonly string connectionString = "UseDevelopmentStorage=true";
 
         public BlobStorageService()
         {
             _blobServiceClient = new BlobServiceClient(
-                "UseDevelopmentStorage=true");
+                connectionString);
 
             _blobContainerClient = _blobServiceClient.GetBlobContainerClient("orders");
             _blobContainerClient.CreateIfNotExists();
@@ -27,6 +28,12 @@ namespace Order_Processing_System.Services
             using MemoryStream stream = new MemoryStream(byteArray);
 
             await blob.UploadAsync(stream, overwrite: true);
+        }
+        public async Task DeleteBlobAsync(int OrderId)
+        {
+            BlobClient blobClient = new BlobClient(connectionString, "orders", $"order-{OrderId}");
+            await blobClient.DeleteIfExistsAsync();
+            Console.WriteLine("Blob successfully deleted");
         }
     }
 }

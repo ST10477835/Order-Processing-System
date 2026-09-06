@@ -1,6 +1,7 @@
 ﻿@model List<Order>
 @{
     var products = ViewBag.Products as List<Product>;
+
 }
 <form asp-action="CreateOrder" method="get">
     <button type="submit">Create Order</button>
@@ -15,6 +16,13 @@
             Product: @products.First(p=>p.ProductId==order.ProductId).Name<br/>
             Quantity: @order.Quanitity<br />
             Created At: @order.CreatedAt<br />
+            <form asp-action="DeleteOrder" method="get" enctype="text/plain">
+                <input type="hidden" name="OrderId"  value="@order.OrderId" />
+                <button type="submit">
+                    Delete Order @order.OrderId
+                </button>
+            </form>
+
         </li>
     }
 </ul>

@@ -1,4 +1,7 @@
-﻿using Azure.Data.Tables;
+﻿using Azure;
+using Azure.Data.Tables;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Order_Processing_System.Models;
 
 namespace Order_Processing_System.Services
@@ -47,6 +50,19 @@ namespace Order_Processing_System.Services
             }
             return orders;
         }
+        public Order GetOrder(int Id)
+        {
+            var orders = GetOrders();
+            Order _order = new Order();
+            foreach(Order order in orders)
+            {
+                if (order.OrderId == Id)
+                {
+                    _order = order;
+                }
+            }
+            return _order;
+        }
         public List<Product> GetProducts()
         {
             var tableClient = GetProductTable();
@@ -62,6 +78,12 @@ namespace Order_Processing_System.Services
                 });
             }
             return products;
+        }
+        public async Task DeleteOrderAsync(int OrderId)
+        {
+            var tableClient = GetOrderTable();
+            Console.WriteLine($"Inside DeleteOrderAsync. Order id = {OrderId}");
+            await tableClient.DeleteEntityAsync("Orders", $"{OrderId}");
         }
         public int CountOrders()
         {

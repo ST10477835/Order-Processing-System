@@ -21,6 +21,7 @@ namespace Order_Processing_System.Services
             var json = JsonSerializer.Serialize(orderMessage);
             await _queueClient.SendMessageAsync(json);
             Console.WriteLine("message successfully sent.");
+            Console.WriteLine($"Order Operation: ${orderMessage.Operation}");
         }
         public async Task SendMessageAsync(ProductMessage productMessage)
         {
