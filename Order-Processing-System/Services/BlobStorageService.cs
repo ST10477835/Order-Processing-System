@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Order_Processing_System.Models;
 using System.Text;
 using System.Text.Json;
@@ -35,5 +36,16 @@ namespace Order_Processing_System.Services
             await blobClient.DeleteIfExistsAsync();
             Console.WriteLine("Blob successfully deleted");
         }
+        public async Task UpdateBlobAsync(Order order)
+        {
+            BlobClient blobClient = _blobContainerClient.GetBlobClient($"order-{order.OrderId}");
+            string json = JsonSerializer.Serialize(order);
+            byte[] byteArray = Encoding.UTF8.GetBytes(json);
+            using MemoryStream stream = new MemoryStream(byteArray);
+
+            // Overwrite the existing blob
+            await blobClient.UploadAsync(stream, overwrite: true);
+        }
     }
-}
+    }
+

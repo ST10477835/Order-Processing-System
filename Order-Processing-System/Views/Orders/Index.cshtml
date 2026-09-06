@@ -22,6 +22,12 @@
                     Delete Order @order.OrderId
                 </button>
             </form>
+            <form asp-action="UpdateOrder" method="get">
+                <input  type="hidden" name="OrderId" value="@order.OrderId"/>
+                <button type="submit">
+                    Update Order @order.OrderId
+                </button>
+            </form>
 
         </li>
     }

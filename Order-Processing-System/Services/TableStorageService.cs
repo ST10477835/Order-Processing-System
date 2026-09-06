@@ -85,6 +85,15 @@ namespace Order_Processing_System.Services
             Console.WriteLine($"Inside DeleteOrderAsync. Order id = {OrderId}");
             await tableClient.DeleteEntityAsync("Orders", $"{OrderId}");
         }
+        public async Task UpdateOrderAsync(OrderEntity order)
+        {
+            var tableClient = GetOrderTable();
+            await tableClient.UpdateEntityAsync(
+                order,
+                ETag.All,
+                TableUpdateMode.Merge
+            );
+        }
         public int CountOrders()
         {
             var tableClient = GetOrderTable();

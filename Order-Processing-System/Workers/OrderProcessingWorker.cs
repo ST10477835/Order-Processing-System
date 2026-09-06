@@ -32,8 +32,9 @@ namespace Order_Processing_System.Workers
                         switch (orderMessage.Operation)
                         {
                             case "Create Order":
-                                Order? order = orderMessage.Order;
-                                var orderEntity = new OrderEntity
+                                {
+                                    Order? order = orderMessage.Order;
+                                    var orderEntity = new OrderEntity
                                     {
                                         PartitionKey = "Orders",
                                         RowKey = order.OrderId.ToString(),
@@ -54,17 +55,35 @@ namespace Order_Processing_System.Workers
                                     {
                                         Console.WriteLine($"Failed to process order: {ex.Message}");
                                     }
+                                }
                                 break;
                             case "Delete Order":
+                                {
                                     int orderId = orderMessage.OrderId;
-                                Console.WriteLine(queueMessage.MessageText);
-                                Console.WriteLine(orderMessage);
-                                Console.WriteLine($"Order Id is {orderId}");
+                                    Console.WriteLine(queueMessage.MessageText);
+                                    Console.WriteLine(orderMessage);
+                                    Console.WriteLine($"Order Id is {orderId}");
                                     await _tableStorageService.DeleteOrderAsync(orderId);
-                                await _blobStorageService.DeleteBlobAsync(orderId);
+                                    await _blobStorageService.DeleteBlobAsync(orderId);
                                     Console.WriteLine($"Successfully Deleted Record {orderId}");
+                                }
                                 break;
-                            case "Create Product":
+                            case "Update Order":
+                                {
+                                    Order? order = orderMessage.Order;
+                                    var orderEntity = new OrderEntity
+                                    {
+                                        PartitionKey = "Orders",
+                                        RowKey = order.OrderId.ToString(),
+                                        CustomerName = order.CustomerName,
+                                        Email = order.Email,
+                                        ProductId = order.ProductId,
+                                        Quanitity = order.Quanitity,
+                                        CreatedAt = order.CreatedAt
+                                    };
+                                    await _tableStorageService.UpdateOrderAsync(orderEntity);
+                                    await _blobStorageService.UpdateBlobAsync(order);
+                                } 
                                 break;
                         }
 

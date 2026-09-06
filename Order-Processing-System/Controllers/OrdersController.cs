@@ -1,5 +1,6 @@
 ﻿using Azure.Data.Tables;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Order_Processing_System.Models;
 using Order_Processing_System.Services;
@@ -66,6 +67,24 @@ namespace Order_Processing_System.Controllers
                     OrderId = Order.OrderId
                 });
             Console.WriteLine($"Delete Message sent order {Order.OrderId}.");
+            return RedirectToAction("Index");
+        }
+        [HttpGet("UpdateOrder")]
+        public IActionResult UpdateOrder(int OrderId)
+        {
+            var order = _tableStorageService.GetOrder(OrderId);
+            ViewBag.Products = _tableStorageService.GetProducts();
+            return View(order);
+        }
+        [HttpPost("UpdateOrder")]
+        public async Task<IActionResult> UpdateOrder([FromForm] Order Order)
+        {
+            await _queueStorageService.SendMessageAsync(
+                new OrderMessage
+                {
+                    Operation = "Update Order",
+                    Order = Order
+                });
             return RedirectToAction("Index");
         }
     }
